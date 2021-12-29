@@ -1,0 +1,15 @@
+GET http://localhost:7070/hello
+###
+GET http://localhost:7070/files/signed-url?fileName=sdgsd&fileExt=png
+###
+GET http://localhost:7070/files/user-uploaded-file-list
+###
+PUT http://localhost:7070/files/signed-url?fileName=sdgsd&fileExt=jpg
+###
+GET https://nml12pv984.execute-api.ap-northeast-1.amazonaws.com/hello
+###
+GET https://adw07rjx47.execute-api.ap-northeast-1.amazonaws.com/files/signed-url?fileName=sdgsd&fileExt=jpg
+###
+PUT https://adw07rjx47.execute-api.ap-northeast-1.amazonaws.com/files/signed-url?fileName=sdgsd&fileExt=jpg
+###
+GET https://adw07rjx47.execute-api.ap-northeast-1.amazonaws.com/files/user-uploaded-file-list

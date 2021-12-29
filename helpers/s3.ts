@@ -100,12 +100,15 @@ export const getSystemGeneratedFileS3Key = (
   return `system-generated/${resourceType}/${id || nanoid()}.${fileExt}`;
 };
 
+export const rootFolderName = 'user-uploaded';
+
+/** 獲得檔案的 key */
 export const getUserUploadedFileS3Key = (
   userId: string,
   fileExt: string,
-  fileName?: string,
+  fileId?: string,
 ) => {
-  return `user-uploaded/${userId}/${fileName || nanoid()}.${fileExt}`;
+  return `${rootFolderName}/${userId}/${fileId || nanoid()}.${fileExt}`;
 };
 
 export const downloadFile = async (key: string) => {

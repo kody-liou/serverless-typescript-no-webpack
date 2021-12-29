@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
-    "dev": "kill-port 7070 && cross-env SLS_DEBUG=* SKIP_AUTH=true serverless offline --httpPort=7070",
+    "dev": "kill-port 7070 && cross-env SKIP_AUTH=true serverless offline --httpPort=7070",
     "test": "jest",
     "lint": "eslint . --fix --ext .ts",
     "build": "tsc"

@@ -3,11 +3,10 @@ require('dotenv').config();
 
 import httpErrorHandler from '@middy/http-error-handler';
 import middy from '@middy/core';
-import type { APIGatewayProxyResult } from 'aws-lambda';
 
-export default middy(async (): Promise<APIGatewayProxyResult> => {
+export default middy(async () => {
   return {
     statusCode: 200,
-    body: 'hello',
+    body: { a: 1 },
   };
 }).use(httpErrorHandler());

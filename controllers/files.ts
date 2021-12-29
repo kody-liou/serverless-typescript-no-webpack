@@ -12,6 +12,8 @@ import {
   getSignedUrl as getS3SignedUrl,
   listObjects as listS3Object,
   GetSignedUrlOperation,
+  deleteFile as deleteS3File,
+  rootFolderName,
 } from '../helpers/s3';
 import * as authenticator from '../middlewares/authenticator';
 
@@ -66,6 +68,21 @@ export const signedUrl = middy(
   .use(httpEventNormalizer())
   .use(responseSerializer);
 // .use(authenticator.default());
+
+export const deleteUserFolder = middy(
+  async (event: authenticator.Event): Promise<APIGatewayProxyResultV2> => {
+    const response = await deleteS3File(
+      `${rootFolderName}/${event.authedUserId || 'testtest'}`,
+    ).then(res => res);
+    console.log(response);
+    return {
+      statusCode: response.statusCode,
+    };
+  },
+)
+  .use(httpErrorHandler())
+  .use(httpEventNormalizer())
+  .use(responseSerializer);
 
 export const listObjects = middy(
   async (event: authenticator.Event): Promise<APIGatewayProxyResultV2> => {
