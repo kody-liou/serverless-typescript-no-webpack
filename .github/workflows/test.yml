@@ -19,7 +19,7 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
     - uses: bahmutov/npm-install@v1
-      run: |
+    - run: |
         npm ci
         npm i -g serverless@2.69.1
     - name: Configure AWS Credentials
