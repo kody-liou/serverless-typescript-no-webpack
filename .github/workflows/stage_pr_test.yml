@@ -1,13 +1,11 @@
-name: Local Test
-
 on:
   pull_request:
     branches:
-      - master
+      - stg
 
 jobs:
-  local-test:
-    name: local test
+  test:
+    name: Test before deploy to stage 
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -34,3 +32,4 @@ jobs:
         AWS_DEPLOYMENT_BUCKET_NAME: ${{ secrets.AWS_DEPLOYMENT_BUCKET_NAME }}
         REGION: ${{ secrets.REGION }}
         FIREBASE_CREDENTIALS: ${{ secrets.FIREBASE_CREDENTIALS }}
+        API_BASE_URL: ${{ secrets.STAGE_API_BASE_URL }}
