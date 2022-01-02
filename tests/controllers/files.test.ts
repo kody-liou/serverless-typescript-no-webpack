@@ -23,7 +23,10 @@ describe('file', () => {
   });
 
   it('upload file', async () => {
-    const filePath = path.resolve(__dirname, '../assets/IMG20201004134009.jpg');
+    const filePath = path.resolve(
+      __dirname,
+      '../assets/taipei_fine_arts_museum.jpg',
+    );
     const buffer = fs.readFileSync(filePath);
     const config: AxiosRequestConfig<Buffer> = {
       method: 'put',
