@@ -18,8 +18,11 @@ jobs:
       uses: actions/setup-node@v1
       with:
         node-version: ${{ matrix.node-version }}
-    - run: npm ci
-    - run: npm i -g serverless@2.69.1
+    - name: npm install and cache
+      uses: bahmutov/npm-install@v1
+      run: |
+        npm ci
+        npm i -g serverless@2.69.1
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v1
       with:
