@@ -28,6 +28,19 @@ jobs:
       run: |
         npm ci
         npm i -g serverless@2.69.1
+    - name: Create .env file
+      env:
+        AWS_BUCKET_NAME: ${{ secrets.AWS_BUCKET_NAME }}
+        AWS_DEPLOYMENT_BUCKET_NAME: ${{ secrets.AWS_DEPLOYMENT_BUCKET_NAME }}
+        REGION: ${{ secrets.REGION }}
+        FIREBASE_CREDENTIALS: ${{ secrets.FIREBASE_CREDENTIALS }}
+      run: |
+        touch .env
+        echo AWS_BUCKET_NAME=${AWS_BUCKET_NAME} >> .env
+        echo AWS_DEPLOYMENT_BUCKET_NAME=${AWS_DEPLOYMENT_BUCKET_NAME} >> .env
+        echo REGION=${REGION} >> .env
+        echo FIREBASE_CREDENTIALS=${FIREBASE_CREDENTIALS} >> .env
+        ls
     - name: Deploy
       run: sls deploy
       env:
@@ -35,7 +48,3 @@ jobs:
         # or if using AWS credentials directly
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        AWS_BUCKET_NAME: ${{ secrets.AWS_BUCKET_NAME }}
-        AWS_DEPLOYMENT_BUCKET_NAME: ${{ secrets.AWS_DEPLOYMENT_BUCKET_NAME }}
-        REGION: ${{ secrets.REGION }}
-        FIREBASE_CREDENTIALS: ${{ secrets.FIREBASE_CREDENTIALS }}
