@@ -1,4 +1,4 @@
-name: Deploy master branch
+name: Test
 
 on:
   pull_request:
