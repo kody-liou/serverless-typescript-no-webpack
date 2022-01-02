@@ -1,14 +1,11 @@
 // # sourceMappingURL=auth.js.map
 require('dotenv').config();
 
-import AWS from 'aws-sdk';
 import middy from '@middy/core';
 import httpErrorHandler from '@middy/http-error-handler';
 import httpEventNormalizer from '@middy/http-event-normalizer';
 import type { APIGatewayEvent } from 'aws-lambda';
 import { firebaseAdmin } from '../helpers/gcp';
-
-AWS.config.update({ region: process.env.REGION });
 
 const generatePolicy = (principalId: string, methodArn: string) => {
   const apiGatewayWildcard = `${methodArn.split('/', 2).join('/')}/*`;

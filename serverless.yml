@@ -37,7 +37,7 @@ functions:
           path: /hello
   auth:
     handler: controllers/auth.default
-  userUploadFileSignedUrl:
+  userFileSignedUrlGet:
     handler: controllers/files.signedUrl
     events:
       - httpApi:
@@ -48,9 +48,9 @@ functions:
     events:
       - httpApi:
           method: get
-          path: /files/user-uploaded-file-list
-  userFileFolderDelete:
-    handler: controllers/files.deleteUserFolder
+          path: /files/list
+  userFileDelete:
+    handler: controllers/files.deleteFile
     events:
       - httpApi:
           method: delete

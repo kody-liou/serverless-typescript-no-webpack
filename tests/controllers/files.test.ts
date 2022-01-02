@@ -1,5 +1,6 @@
 import axios, { AxiosRequestConfig } from 'axios';
 import fs from 'fs';
+// import FormData from 'form-data';
 import path from 'path';
 
 const API_BASE_URL = `http://localhost:${process.env.PORT || 7070}`;
@@ -7,12 +8,14 @@ const API_BASE_URL = `http://localhost:${process.env.PORT || 7070}`;
 describe('file', () => {
   jest.setTimeout(30000000);
   let uploadUrl: string;
+  const fileId = 'testFile2xxxx';
+  const fileExt = 'jpg';
   it('get put file url', async () => {
     const response1 = await axios.put(
       `${API_BASE_URL}/files/signed-url`,
       null,
       {
-        params: { fileName: 'testFile2xxxx', fileExt: 'jpg' },
+        params: { fileName: fileId, fileExt },
       },
     );
     expect(response1.status).toEqual(200);
@@ -22,6 +25,17 @@ describe('file', () => {
 
   it('upload file', async () => {
     const filePath = path.resolve(__dirname, '../assets/IMG20201004134009.jpg');
+    // const form = new FormData();
+    // // Object.entries(fields).forEach(([field, value]) => {
+    // //   form.append(field, value);
+    // // });
+    // form.append('file', fs.createReadStream(filePath));
+    // form.submit(uploadUrl, (error, res) => {
+    //   // handle the response
+    //   console.log('error:', error);
+    //   console.log('res', res);
+    //   expect(error).toEqual(undefined);
+    // });
     const buffer = fs.readFileSync(filePath);
     const config: AxiosRequestConfig<Buffer> = {
       method: 'put',
@@ -37,7 +51,7 @@ describe('file', () => {
   let downloadUrl: string;
   it('get download file url', async () => {
     const res = await axios.get(`${API_BASE_URL}/files/signed-url`, {
-      params: { fileName: 'testFile2xxxx', fileExt: 'jpg' },
+      params: { fileName: fileId, fileExt },
     });
     expect(res.status).toEqual(200);
     expect(res.data).toMatch(/https:\//);
@@ -50,14 +64,21 @@ describe('file', () => {
   });
 
   it('list file', async () => {
-    const res = await axios.get(
-      `${API_BASE_URL}/files/user-uploaded-file-list`,
-    );
+    const res = await axios.get(`${API_BASE_URL}/files/list`);
+    expect(JSON.parse(res.data).length).toEqual(1);
     expect(res.status).toEqual(200);
   });
 
-  it('remove user folder', async () => {
-    const res = await axios.delete(`${API_BASE_URL}/files`);
+  it('delete file', async () => {
+    const res = await axios.delete(`${API_BASE_URL}/files`, {
+      params: { fileId, fileExt },
+    });
     expect(res.status).toEqual(204);
+  });
+
+  it('list file', async () => {
+    const res = await axios.get(`${API_BASE_URL}/files/list`);
+    expect(JSON.parse(res.data).length).toEqual(0);
+    expect(res.status).toEqual(200);
   });
 });

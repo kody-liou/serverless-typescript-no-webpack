@@ -9,11 +9,10 @@ import httpErrorHandler from '@middy/http-error-handler';
 import { responseSerializer } from '../helpers/middy';
 import {
   getUserUploadedFileS3Key,
-  getSignedUrl as getS3SignedUrl,
+  generateGetObjectSignedUrl,
+  generatePutObjectSignedUrl,
   listObjects as listS3Object,
-  GetSignedUrlOperation,
   deleteFile as deleteS3File,
-  rootFolderName,
 } from '../helpers/s3';
 import * as authenticator from '../middlewares/authenticator';
 
@@ -21,12 +20,7 @@ export const signedUrl = middy(
   async (event: authenticator.Event): Promise<APIGatewayProxyResultV2> => {
     // @ts-ignore:next-line
     const { method } = event.requestContext.http;
-    let operation: GetSignedUrlOperation;
-    if (method === 'GET') {
-      operation = GetSignedUrlOperation.getObject;
-    } else if (method === 'PUT') {
-      operation = GetSignedUrlOperation.putObject;
-    } else {
+    if (!['GET', 'PUT'].includes(method)) {
       return {
         statusCode: 405,
         body: 'Method Not Allowed',
@@ -46,18 +40,17 @@ export const signedUrl = middy(
         body: 'Invalid fileExt',
       };
     }
-    const uploadUrl = getS3SignedUrl(
-      getUserUploadedFileS3Key(
-        event.authedUserId || 'testtest',
-        fileExt,
-        fileName,
-      ),
-      {
-        operation,
-        contentType,
-        expirationSeconds: 600,
-      },
+    const key = getUserUploadedFileS3Key(
+      event.authedUserId || 'testtest',
+      fileExt,
+      fileName,
     );
+    let uploadUrl: string;
+    if (method === 'PUT') {
+      uploadUrl = await generatePutObjectSignedUrl(key);
+    } else {
+      uploadUrl = await generateGetObjectSignedUrl(key);
+    }
     return {
       statusCode: 200,
       body: uploadUrl,
@@ -69,14 +62,21 @@ export const signedUrl = middy(
   .use(responseSerializer);
 // .use(authenticator.default());
 
-export const deleteUserFolder = middy(
+export const deleteFile = middy(
   async (event: authenticator.Event): Promise<APIGatewayProxyResultV2> => {
-    const response = await deleteS3File(
-      `${rootFolderName}/${event.authedUserId || 'testtest'}`,
-    ).then(res => res);
+    const { authedUserId = 'testtest', queryStringParameters } = event;
+    const { fileExt, fileId } = queryStringParameters!;
+    if (!fileId || !fileExt) {
+      return {
+        statusCode: 400,
+        body: 'No fileId or fileExt',
+      };
+    }
+    const key = getUserUploadedFileS3Key(authedUserId, fileExt, fileId);
+    const response = await deleteS3File(key);
     console.log(response);
     return {
-      statusCode: response.statusCode,
+      statusCode: 200,
     };
   },
 )
