@@ -5,9 +5,8 @@ export const firebaseAdmin = (): admin.app.App => {
     // @ts-ignore
     return admin;
   }
-  if (!process.env.FIREBASE_CREDENTIALS) throw Error('no FIREBASE_CREDENTIALS');
   const secretText = Buffer.from(
-    process.env.FIREBASE_CREDENTIALS,
+    process.env.FIREBASE_CREDENTIALS!,
     'base64',
   ).toString('utf-8');
   const secrets = JSON.parse(secretText);

@@ -1,6 +1,5 @@
 import httpResponseSerializer from '@middy/http-response-serializer';
 
-// eslint-disable-next-line
 export const responseSerializer = httpResponseSerializer({
   serializers: [
     {

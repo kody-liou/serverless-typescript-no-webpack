@@ -1,9 +1,12 @@
 const env = {
   es2021: true,
   node: true,
+  'jest/globals': true,
 };
 
 const rules = {
+  'consistent-return': 'off',
+  'import/prefer-default-export': 'off',
   'import/first': 'off',
   'max-classes-per-file': ['error', 20],
   'no-underscore-dangle': [
@@ -50,31 +53,29 @@ module.exports = {
   extends: [
     'airbnb-base',
     'plugin:prettier/recommended',
-    'plugin:import/errors',
-    'plugin:import/warnings',
+    'plugin:import/recommended',
     'plugin:import/typescript',
   ],
+  settings: {
+    'import/resolver': {
+      typescript: {},
+    },
+  },
   parser: '@typescript-eslint/parser',
   parserOptions,
-  plugins: ['@typescript-eslint', 'prettier', 'import'],
+  plugins: ['@typescript-eslint', 'prettier', 'import', 'jest'],
   rules: {
     ...rules,
     'no-unused-vars': 'off',
     '@typescript-eslint/no-unused-vars': ['error'],
+    'no-shadow': 'off',
+    '@typescript-eslint/no-shadow': ['error'],
   },
   overrides: [
     {
       files: ['*.js'],
       env,
       extends: ['airbnb-base'],
-      parserOptions,
-      rules,
-    },
-    {
-      files: ['*.json'],
-      env,
-      extends: ['airbnb-base'],
-      plugins: ['json-format'],
       parserOptions,
       rules,
     },

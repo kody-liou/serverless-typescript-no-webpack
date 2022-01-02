@@ -1,15 +1,33 @@
-service: serverless-api
-frameworkVersion: '2.61.0'
+service: social-app
+frameworkVersion: '2.69.1'
 
 plugins:
+  - serverless-dotenv-plugin
   - serverless-plugin-typescript
   - serverless-offline
-  
+custom:
+  serverless-offline:
+    host: 0.0.0.0
 provider:
+  deploymentBucket:
+    name: ${env:AWS_DEPLOYMENT_BUCKET_NAME}
+    serverSideEncryption: AES256
   name: aws
   runtime: nodejs14.x
+  region: ${env:REGION}
   lambdaHashingVersion: 20201221
-
+  httpApi:
+    cors: true
+  iam:
+    role:
+      statements:
+        - Effect: 'Allow'
+          Resource: '*'
+          Action:
+            - s3:PutObject
+            - s3:GetObject
+            - s3:DeleteObject
+            - s3:ListBucket
 functions:
   hello:
     handler: controllers/hello.default
@@ -17,10 +35,24 @@ functions:
       - httpApi:
           method: get
           path: /hello
-  imagePresignedURL:
-    handler: controllers/images.getPresignedURL
+  auth:
+    handler: controllers/auth.default
+  userFileSignedUrlGet:
+    handler: controllers/files.signedUrl
+    events:
+      - httpApi:
+          method: any
+          path: /files/signed-url
+  userFileListGet:
+    handler: controllers/files.listObjects
     events:
       - httpApi:
           method: get
-          path: /image/presigned-url
+          path: /files/list
+  userFileDelete:
+    handler: controllers/files.deleteFile
+    events:
+      - httpApi:
+          method: delete
+          path: /files
   

@@ -1,14 +1,18 @@
 {
   "compilerOptions": {
+    "skipLibCheck": true,
     "preserveConstEnums": true,
     "strictNullChecks": true,
     "sourceMap": true,
     "allowJs": true,
-    "target": "es5",
+    "target": "es6",
+    "module": "commonjs",
     "outDir": ".build",
     "moduleResolution": "node",
     "lib": ["es2020", "dom"],
     "rootDir": "./",
     "esModuleInterop": true,
+    "types": ["jest", "node"],
+    "typeRoots": ["./types", "./node_modules/@types"]
   }
 }

@@ -1,48 +1,41 @@
-import createHttpError from 'http-errors';
-import { APIGatewayProxyEvent } from 'aws-lambda';
-import { firebaseAdmin } from '../helpers/gcp';
+import jwtDecode from 'jwt-decode';
+import type middy from '@middy/core';
+import type { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 
-export type AuthedEvent = APIGatewayProxyEvent & {
-  loggedInUser: {
-    uid: string;
-    email: string;
-    sub: string;
+export type Event = {
+  authedUserId: string;
+} & APIGatewayProxyEvent;
+
+export default (): middy.MiddlewareObj<Event, APIGatewayProxyResult> => {
+  const before: middy.MiddlewareFn<Event, APIGatewayProxyResult> = async (
+    request,
+  ): Promise<APIGatewayProxyResult | void> => {
+    try {
+      const { event } = request;
+      let sub: string;
+      const authText =
+        event.headers.Authorization || event.headers.authorization;
+      if (process.env.SKIP_AUTH && authText) {
+        const decodedToken = jwtDecode<{ sub: string }>(authText);
+        sub = decodedToken.sub;
+      } else {
+        sub = event.requestContext.authorizer?.sub;
+      }
+      const userId = event.pathParameters?.userId || sub;
+      if (!userId) return { statusCode: 403, body: 'No userId' };
+      if (userId !== sub) {
+        return { statusCode: 403, body: 'userId no equal to sub' };
+      }
+      event.authedUserId = userId;
+    } catch (error) {
+      console.log(error);
+      return {
+        statusCode: 500,
+        body: error,
+      };
+    }
+  };
+  return {
+    before,
   };
 };
-
-interface Request {
-  event: AuthedEvent | undefined;
-}
-export default () => ({
-  before: async (request: Request) => {
-    try {
-      const { event = {} } = request;
-      event.loggedInUser = {};
-      if (process.env.SKIP_AUTH === 'true') {
-        event.loggedInUser.sub = process.env.LOGGED_IN_USER_SUB;
-        event.loggedInUser.email = process.env.LOGGED_IN_USER_EMAIL;
-        event.loggedInUser.uid = process.env.LOGGED_IN_USER_UID;
-        return;
-      }
-      if (!event.headers?.authorization) {
-        throw createHttpError(403, 'Missing authorization token');
-      }
-      const [bearerWord, tokenValue] = event.headers.authorization.split(' ');
-      if (bearerWord.toLowerCase() !== 'bearer' || !tokenValue) {
-        throw createHttpError(403, 'Unauthorized');
-      }
-      const admin = firebaseAdmin();
-      const decodedToken = await admin.auth().verifyIdToken(tokenValue);
-      const { sub, email, uid } = decodedToken;
-      if (!sub || !email) {
-        throw createHttpError(403, 'Unauthorized');
-      }
-      event.loggedInUser.sub = sub;
-      event.loggedInUser.email = email;
-      event.loggedInUser.uid = uid;
-    } catch (err) {
-      console.log(err);
-      throw createHttpError(403, `Unauthorized: ${err}`);
-    }
-  },
-});
