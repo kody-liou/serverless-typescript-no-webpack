@@ -19,5 +19,6 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
     - run: npm ci
+    - run: npm i -g serverless@2.69.1
     - run: npm run dev
     - run: npm run test
