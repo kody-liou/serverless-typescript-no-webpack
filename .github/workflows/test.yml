@@ -6,8 +6,8 @@ on:
       - master
 
 jobs:
-  deploy:
-    name: deploy
+  local-test:
+    name: local test
     runs-on: ubuntu-latest
     strategy:
       matrix:
