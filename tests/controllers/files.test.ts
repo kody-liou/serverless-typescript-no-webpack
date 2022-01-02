@@ -7,7 +7,7 @@ const API_BASE_URL = `http://localhost:${process.env.PORT || 7070}`;
 describe('file', () => {
   jest.setTimeout(30000000);
   let uploadUrl: string;
-  const fileId = 'testFile2xxxx';
+  const fileId = 'test-image';
   const fileExt = 'jpg';
   it('get put file url', async () => {
     const response1 = await axios.put(
@@ -60,16 +60,16 @@ describe('file', () => {
     expect(res.status).toEqual(200);
   });
 
-  it('delete file', async () => {
-    const res = await axios.delete(`${API_BASE_URL}/files`, {
-      params: { fileId, fileExt },
-    });
-    expect(res.status).toEqual(204);
-  });
+  // it('delete file', async () => {
+  //   const res = await axios.delete(`${API_BASE_URL}/files`, {
+  //     params: { fileId, fileExt },
+  //   });
+  //   expect(res.status).toEqual(204);
+  // });
 
-  it('list file', async () => {
-    const res = await axios.get(`${API_BASE_URL}/files/list`);
-    expect(JSON.parse(res.data).length).toEqual(0);
-    expect(res.status).toEqual(200);
-  });
+  // it('list file', async () => {
+  //   const res = await axios.get(`${API_BASE_URL}/files/list`);
+  //   expect(JSON.parse(res.data).length).toEqual(0);
+  //   expect(res.status).toEqual(200);
+  // });
 });
