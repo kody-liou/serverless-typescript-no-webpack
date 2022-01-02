@@ -1,6 +1,10 @@
+require('dotenv').config();
+
 import axios, { AxiosRequestConfig } from 'axios';
 import fs from 'fs';
 import path from 'path';
+
+const isLocalEnvAPI = process.env.API_BASE_URL?.includes('localhost');
 
 describe('file', () => {
   jest.setTimeout(30000000);
@@ -65,7 +69,11 @@ describe('file', () => {
     const res = await axios.delete(`${process.env.API_BASE_URL}/files`, {
       params: { fileId, fileExt },
     });
-    expect(res.status).toEqual(204);
+    if (isLocalEnvAPI) {
+      expect(res.status).toEqual(204);
+      return;
+    }
+    expect(res.status).toEqual(200);
   });
 
   it('list file', async () => {
