@@ -1,6 +1,5 @@
 import axios, { AxiosRequestConfig } from 'axios';
 import fs from 'fs';
-// import FormData from 'form-data';
 import path from 'path';
 
 const API_BASE_URL = `http://localhost:${process.env.PORT || 7070}`;
@@ -25,17 +24,6 @@ describe('file', () => {
 
   it('upload file', async () => {
     const filePath = path.resolve(__dirname, '../assets/IMG20201004134009.jpg');
-    // const form = new FormData();
-    // // Object.entries(fields).forEach(([field, value]) => {
-    // //   form.append(field, value);
-    // // });
-    // form.append('file', fs.createReadStream(filePath));
-    // form.submit(uploadUrl, (error, res) => {
-    //   // handle the response
-    //   console.log('error:', error);
-    //   console.log('res', res);
-    //   expect(error).toEqual(undefined);
-    // });
     const buffer = fs.readFileSync(filePath);
     const config: AxiosRequestConfig<Buffer> = {
       method: 'put',
